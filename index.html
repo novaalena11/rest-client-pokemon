@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pokemon REST Client</title>
+
+  <style>
+    :root {
+      --pink1: #ffe3f0;
+      --pink2: #ffb7d9;
+      --pink3: #ff78b8;
+      --pink4: #e85ca0;
+      --text: #c70063;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--pink1);
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(90deg, var(--pink1), var(--pink2));
+      padding: 18px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      color: var(--pink4);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    nav a {
+      margin-left: 16px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      transition: 0.2s;
+      background: #ffd9ec;
+    }
+
+    nav a:hover {
+      background: var(--pink3);
+      color: white;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 900px;
+      margin: 60px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      animation: fadeIn 0.7s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      color: var(--pink4);
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #444;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .btn-start {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 26px;
+      background: var(--pink3);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .btn-start:hover {
+      background: var(--pink4);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(255,120,184,0.35);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Pokémon REST Client</h1>
+
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+    <div class="container">
+    <h2>Selamat Datang!</h2>
+    <p>Ini adalah halaman utama aplikasi <b>Pokémon REST Client</b>.</p>
+    <p>Pada halaman HOME akan menampilkan beberapa Pokémon terkenal.</p>
+    <p>Jika ingin melihat seluruh koleksi Pokémon ada pada halaman GALLERY.</p>
+
+</body>
+</html>
