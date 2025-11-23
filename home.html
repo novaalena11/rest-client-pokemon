@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home • Pokemon REST Client</title>
+
+  <style>
+    :root {
+      --pink1: #ffe3f0;
+      --pink2: #ffb7d9;
+      --pink3: #ff78b8;
+      --pink4: #e85ca0;
+      --text: #c70063;
+      --card: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--pink1);
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(90deg, var(--pink1), var(--pink2));
+      padding: 18px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      color: var(--pink4);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    nav a {
+      margin-left: 16px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: #ffd9ec;
+      transition: .2s;
+    }
+
+    nav a:hover {
+      background: var(--pink3);
+      color: white;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: white;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      animation: fadeIn .5s;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 { color: var(--pink4); margin-bottom: 15px; text-align: center; }
+
+    p { color: #444; text-align: center; margin-bottom: 25px; }
+
+    /* GRID 4 kolom */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 450px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      transition: .2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+    }
+
+    .name {
+      margin-top: 10px;
+      color: var(--pink4);
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Pokemon REST Client</h1>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Pokémon Terpopuler</h2>
+    <p>Beberapa koleksi Pokémon paling terkenal dan banyak disukai di seluruh dunia.</p>
+    <p> Lihat Semua Koleksi Pokémon pada Gallery.</p>
+
+    <div class="grid">
+      
+      <!-- PIKACHU -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/pikachu.jpg" alt="Pikachu">
+        <div class="name">Pikachu</div>
+      </div>
+
+      <!-- CHARIZARD -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/charizard.jpg" alt="Charizard">
+        <div class="name">Charizard</div>
+      </div>
+
+      <!-- MEWTWO -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/mewtwo.jpg" alt="Mewtwo">
+        <div class="name">Mewtwo</div>
+      </div>
+
+      <!-- GRENINJA -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/greninja.jpg" alt="Greninja">
+        <div class="name">Greninja</div>
+      </div>
+
+      <!-- LUCARIO -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/lucario.jpg" alt="Lucario">
+        <div class="name">Lucario</div>
+      </div>
+
+      <!-- GENGAR -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/gengar.jpg" alt="Gengar">
+        <div class="name">Gengar</div>
+      </div>
+
+      <!-- EEVEE -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/eevee.jpg" alt="Eevee">
+        <div class="name">Eevee</div>
+      </div>
+
+      <!-- RAYQUAZA -->
+      <div class="card">
+        <img src="https://img.pokemondb.net/artwork/large/rayquaza.jpg" alt="Rayquaza">
+        <div class="name">Rayquaza</div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
