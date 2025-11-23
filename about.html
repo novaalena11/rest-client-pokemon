@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About • Pokemon REST Client</title>
+
+  <style>
+    :root { --pink1:#ffe3f0; --pink2:#ffb7d9; --pink3:#ff78b8; --pink4:#e85ca0; --text:#c70063; }
+    *{box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
+    body{margin:0;background:var(--pink1);color:#222}
+    header{background:linear-gradient(90deg,var(--pink1),var(--pink2));padding:16px 24px;box-shadow:0 2px 6px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
+    header h1{margin:0;color:var(--pink4)}
+    .nav a{margin-left:10px;text-decoration:none;background:#ffd9ec;padding:8px 12px;border-radius:8px;color:var(--text);font-weight:600}
+    main{max-width:900px;margin:40px auto;padding:20px;background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+    h2{color:var(--pink4)}
+    p{color:#444}
+    .list{margin-top:12px}
+    .btn{display:inline-block;padding:10px 16px;background:var(--pink3);color:#fff;border-radius:10px;text-decoration:none;margin-top:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pokemon REST Client</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Tentang Aplikasi</h2>
+    <p>Pokemon REST Client adalah aplikasi edukatif yang menampilkan data Pokémon menggunakan PokeAPI (https://pokeapi.co).</p>
+
+    <div class="list">
+      <p><strong>Fitur:</strong></p>
+      <ul>
+        <li>Menampilkan daftar Pokémon (20 item per halaman)</li>
+        <li>Pencarian berdasarkan nama</li>
+        <li>Detail lengkap tiap Pokémon (stats, abilities, sprites)</li>
+        <li>Sistem favorit sederhana menggunakan localStorage</li>
+      </ul>
+    </div>
+
+    <p><strong>Catatan teknis:</strong> Jika data tidak muncul saat membuka file langsung (file://), jalankan server lokal (mis. Live Server di VSCode) atau hosting sederhana sehingga fetch ke PokeAPI dapat berjalan.</p>
+
+    <a class="btn" href="/mnt/data/Git Workflow & GitHub Projects.pdf" target="_blank" rel="noopener">Buka Dokumentasi (PDF)</a>
+
+    <h3 style="margin-top:18px">Anggota Kelompok</h3>
+    <p>Kelompok 2 / 3B — daftarkan nama anggota di sini jika perlu.</p>
+  </main>
+</body>
+</html>
