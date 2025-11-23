@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gallery • Pokemon REST Client</title>
+
+  <style>
+    :root{
+      --bg:#fff5fa; --card:#fff; --accent:#ff78b8; --accent-dark:#e85ca0; --muted:#555; --max-width:1280px;
+    }
+    *{box-sizing:border-box;font-family:"Poppins",Arial,sans-serif}
+    body{margin:0;background:var(--bg);color:#222}
+
+    /* Header (consistent) */
+    .app-header{
+      display:flex;align-items:center;justify-content:space-between;padding:16px 24px;
+      background:linear-gradient(90deg,#ffe3f0,#ffd1e8);box-shadow:0 2px 6px rgba(0,0,0,.08);
+    }
+    .app-header h1{margin:0;font-size:20px;color:var(--accent-dark)}
+    .nav{display:flex;gap:10px}
+    .nav a{background:#ffd9ec;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--accent-dark);font-weight:600}
+    .nav a:hover{background:var(--accent);color:#fff}
+
+    main{max-width:var(--max-width);margin:26px auto;padding:0 16px}
+
+    .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .controls input{padding:8px 10px;border-radius:8px;border:1px solid #f7a9cf;min-width:220px}
+    .controls button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+
+    /* grid 5 kolom */
+    .grid{
+      display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px;
+    }
+    @media(max-width:1200px){.grid{grid-template-columns:repeat(4,1fr)}}
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:420px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background:var(--card);padding:12px;border-radius:10px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06);
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+    }
+    .card img{width:96px;height:96px;object-fit:contain}
+    .card .name{font-weight:600;color:var(--accent-dark);text-transform:capitalize}
+    .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    .badge{font-size:11px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.06);text-transform:capitalize}
+
+    .actions{display:flex;gap:8px}
+    .btn{padding:6px 8px;border-radius:8px;border:1px solid #ffb7d9;background:#ffe3f0;color:var(--accent-dark);cursor:pointer}
+    .btn:hover{background:var(--accent);color:#fff}
+
+    .pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin:20px 0}
+    .page-info{color:var(--muted)}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:999;padding:20px}
+    .modal.hidden{display:none}
+    .modal-content{background:#fff;padding:18px;border-radius:12px;max-width:780px;width:100%;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+    .close{position:absolute;right:12px;top:8px;border:none;background:transparent;font-size:22px;cursor:pointer;color:var(--accent-dark)}
+    .detail-header{display:flex;gap:12px;align-items:center}
+    .detail-header img{width:140px;height:140px;object-fit:contain}
+    .detail-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+    @media(min-width:700px){.detail-grid{grid-template-columns:repeat(2,1fr)}}
+
+    .loading{display:flex;flex-direction:column;align-items:center;padding:30px;color:var(--muted)}
+    .spinner{width:40px;height:40px;border-radius:50%;border:4px solid rgba(0,0,0,.06);border-top-color:var(--accent);animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>Pokemon REST Client</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="controls" role="region" aria-label="Controls">
+      <input id="searchInput" type="text" placeholder="Cari pokemon (nama)..." aria-label="Cari pokemon">
+      <button id="searchBtn" class="btn">Cari</button>
+      <div style="flex:1"></div>
+      <div class="page-info" id="pageInfo">Page 1 / ?</div>
+    </div>
+
+    <section id="listContainer" class="grid" aria-live="polite"></section>
+
+    <div class="pagination">
+      <button id="prevBtn" class="btn">Prev</button>
+      <button id="nextBtn" class="btn">Next</button>
+    </div>
+
+
+  <!-- modal -->
+  <div id="modal" class="modal hidden" role="dialog" aria-hidden="true">
+    <div class="modal-content" role="document">
+      <button id="closeModal" class="close" aria-label="Tutup">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // gallery logic: 20 per page, grid 5 columns via CSS
+    const API_BASE = 'https://pokeapi.co/api/v2';
+    const limit = 20;
+    let offset = 0;
+    let totalCount = 0;
+
+    const listContainer = document.getElementById('listContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageInfo = document.getElementById('pageInfo');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.getElementById('closeModal');
+
+    function setLoading() {
+      listContainer.innerHTML = '<div class="loading"><div class="spinner"></div><div>Memuat Pokemon...</div></div>';
+    }
+
+    function getIdFromUrl(url){
+      const parts = url.split('/').filter(Boolean);
+      return parts[parts.length-1];
+    }
+
+    function capitalize(s){return s? s.charAt(0).toUpperCase()+s.slice(1):''}
+
+    async function fetchList(off=0, lim=limit){
+      try{
+        const r = await fetch(`${API_BASE}/pokemon?offset=${off}&limit=${lim}`);
+        if(!r.ok) throw new Error('gagal');
+        const d = await r.json(); totalCount = d.count||0; return d;
+      }catch(e){
+        console.error(e); return null;
+      }
+    }
+
+    async function fetchPokemon(idOrName){
+      try{
+        const r = await fetch(`${API_BASE}/pokemon/${idOrName}`);
+        if(!r.ok) return null;
+        return await r.json();
+      }catch(e){ console.error(e); return null; }
+    }
+
+    async function renderList(items){
+      if(!items || items.length===0){ listContainer.innerHTML='<div class="note">Tidak ada data.</div>'; return; }
+      // skeleton
+      listContainer.innerHTML = '';
+      const skFrag = document.createDocumentFragment();
+      items.forEach(()=>{ const sk = document.createElement('div'); sk.className='card'; sk.innerHTML='<div class="loading"><div class="spinner"></div></div>'; skFrag.appendChild(sk); });
+      listContainer.appendChild(skFrag);
+
+      // fetch details in parallel
+      const promises = items.map(it => fetchPokemon(getIdFromUrl(it.url)));
+      const details = await Promise.all(promises);
+
+      listContainer.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      details.forEach((d, idx)=>{
+        const item = items[idx];
+        const id = d? d.id : getIdFromUrl(item.url);
+        const img = d && d.sprites && d.sprites.front_default ? d.sprites.front_default : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+        const types = d && d.types ? d.types.map(t=>t.type.name) : [];
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <img loading="lazy" src="${img}" alt="${item.name || (d&&d.name)}">
+          <div class="name">${capitalize(item.name || (d&&d.name) || ('#'+id))}</div>
+          <div class="badges">${types.map(t=>`<span class="badge">${capitalize(t)}</span>`).join('')}</div>
+          <div class="actions">
+            <button class="btn detail" data-name="${item.name || (d&&d.name)}">Detail</button>
+            <button class="btn fav" data-name="${item.name || (d&&d.name)}">♥️</button>
+          </div>
+        `;
+        frag.appendChild(card);
+      });
+      listContainer.appendChild(frag);
+
+      // handlers
+      listContainer.querySelectorAll('.detail').forEach(b=>{
+        b.addEventListener('click', ()=> showDetail(b.dataset.name));
+      });
+      listContainer.querySelectorAll('.fav').forEach(b=>{
+        const name=b.dataset.name;
+        const favs = JSON.parse(localStorage.getItem('pk_favs')||'[]');
+        if(favs.includes(name)) b.classList.add('active');
+        b.addEventListener('click', ()=>{
+          const favsNow = JSON.parse(localStorage.getItem('pk_favs')||'[]');
+          if(!favsNow.includes(name)){ favsNow.push(name); b.classList.add('active'); }
+          else { const i=favsNow.indexOf(name); favsNow.splice(i,1); b.classList.remove('active'); }
+          localStorage.setItem('pk_favs', JSON.stringify(favsNow));
+        });
+      });
+    }
+
+    function updatePageInfo(){
+      const cur = Math.floor(offset/limit)+1;
+      const total = totalCount ? Math.ceil(totalCount/limit) : '?';
+      pageInfo.textContent = `Page ${cur} / ${total}`;
+      prevBtn.disabled = offset===0;
+      nextBtn.disabled = totalCount ? offset+limit>=totalCount : false;
+    }
+
+    async function loadPage(){
+      setLoading();
+      const data = await fetchList(offset, limit);
+      if(!data){ listContainer.innerHTML = '<div class="note">Gagal memuat data.</div>'; updatePageInfo(); return; }
+      await renderList(data.results);
+      updatePageInfo();
+    }
+
+    // search
+    async function doSearch(){
+      const q = searchInput.value.trim();
+      if(!q){ offset=0; return loadPage(); }
+      setLoading();
+      const found = await fetchPokemon(q.toLowerCase());
+      if(!found){ listContainer.innerHTML = `<div class="note">Pokemon "${q}" tidak ditemukan.</div>`; pageInfo.textContent='Hasil'; return; }
+      // render single
+      await renderList([{ name: found.name, url: `${API_BASE}/pokemon/${found.id}/` }]);
+      pageInfo.textContent = `Hasil: ${capitalize(found.name)}`;
+    }
+
+    // modal/detail
+    closeModal.addEventListener('click', ()=> { modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); });
+    modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); }});
+
+    function showModalLoading(){ modalBody.innerHTML = '<div class="loading"><div class="spinner"></div><div>Memuat detail...</div></div>'; modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+
+    async function showDetail(name){
+      try{
+        showModalLoading();
+        const p = await fetchPokemon(name);
+        if(!p){ modalBody.innerHTML = '<div class="note">Gagal memuat detail.</div>'; return; }
+        const types = p.types.map(t=>t.type.name).join(', ');
+        const abilities = p.abilities.map(a=>a.ability.name).join(', ');
+        modalBody.innerHTML = `
+          <div class="detail-header">
+            <img src="${p.sprites.other['official-artwork']?.front_default || p.sprites.front_default || ''}" alt="${p.name}">
+            <div>
+              <h3 style="margin:0 0 6px">${capitalize(p.name)} <small style="color:var(--muted)">#${p.id}</small></h3>
+              <div style="color:var(--muted)">Types: ${types}</div>
+              <div style="color:var(--muted)">Abilities: ${abilities}</div>
+            </div>
+          </div>
+          <div class="detail-grid">
+            <div>
+              <h4 style="margin:8px 0 6px">Base stats</h4>
+              <ul style="margin:0;padding-left:18px">
+                ${p.stats.map(s=>`<li>${capitalize(s.stat.name)}: ${s.base_stat}</li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <h4 style="margin:8px 0 6px">Sprites</h4>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                ${Object.values(p.sprites).filter(v=>typeof v==='string'&&v).map(src=>`<img src="${src}" width="64" height="64" style="object-fit:contain;border-radius:6px">`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }catch(e){ modalBody.innerHTML = '<div class="note">Error memuat detail.</div>'; }
+    }
+
+    // events
+    prevBtn.addEventListener('click', ()=>{ if(offset===0) return; offset = Math.max(0, offset-limit); loadPage(); });
+    nextBtn.addEventListener('click', ()=>{ offset += limit; loadPage(); });
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') doSearch(); });
+
+    // initial
+    document.addEventListener('DOMContentLoaded', loadPage);
+  </script>
+</body>
+</html>
